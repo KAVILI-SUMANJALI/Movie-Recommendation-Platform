@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ movie["title"] }}{% endblock %}
+{% block content %}
+<div class="detail-card">
+    <div class="detail-poster">
+        {% if movie["poster_url"] %}
+            <img src="{{ movie['poster_url'] }}" alt="Poster for {{ movie['title'] }}">
+        {% else %}
+            <div class="poster-placeholder">🎬</div>
+        {% endif %}
+    </div>
+    <div class="detail-content">
+        <h1>{{ movie["title"] }}</h1>
+        <p class="genre">{{ movie["genre"] }}</p>
+        <p><strong>Release year:</strong> {{ movie["release_year"] or "Not available" }}</p>
+        <p><strong>Director:</strong> {{ movie["director"] or "Not available" }}</p>
+        <p><strong>Description:</strong></p>
+        <p>{{ movie["description"] or "No description available." }}</p>
+
+        <div class="rating-summary">
+            <strong>Community rating:</strong>
+            {% if average_rating is not none %}
+                {{ "%.1f"|format(average_rating) }}/5 ({{ rating_count }} rating(s))
+            {% else %}
+                Not rated yet
+            {% endif %}
+        </div>
+        <form class="rating-form" method="POST" action="{{ url_for('save_rating', movie_id=movie['id']) }}">
+            <label for="rating">Rate this movie (1–5 stars)</label>
+            <select id="rating" name="rating" required>
+                <option value="">Choose your rating</option>
+                {% for value in range(1, 6) %}
+                    <option value="{{ value }}" {% if user_rating == value %}selected{% endif %}>
+                        {{ value }} star{% if value != 1 %}s{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Save Rating</button>
+            {% if user_rating %}
+                <p class="muted">Your current rating: {{ user_rating }}/5</p>
+            {% endif %}
+        </form>
+
+        {% if history %}
+            <p class="status">{{ history["status"] }}</p>
+            <a class="button-link" href="{{ url_for('history') }}">View My History</a>
+        {% else %}
+            <form method="POST" action="{{ url_for('add_to_history', movie_id=movie['id']) }}">
+                <button type="submit">Add to My Watchlist</button>
+            </form>
+        {% endif %}
+        <p><a href="{{ url_for('movies') }}">← Back to Catalog</a></p>
+    </div>
+</div>
+{% endblock %}

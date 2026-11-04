@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Movie Catalog{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div><h1>Movie Catalog</h1><p class="muted">Search movies and explore the catalog.</p></div>
+    <a class="button-link" href="{{ url_for('add_movie') }}">+ Add Movie</a>
+</div>
+<form class="search-bar" method="GET" action="{{ url_for('movies') }}">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search title, director or description">
+    <select name="genre">
+        <option value="">All genres</option>
+        {% for item in genres %}
+            <option value="{{ item['genre'] }}" {% if selected_genre == item['genre'] %}selected{% endif %}>{{ item['genre'] }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Search</button>
+    <a class="button-link secondary" href="{{ url_for('movies') }}">Clear</a>
+</form>
+
+{% if movies %}
+<div class="movie-grid">
+    {% for movie in movies %}
+    <article class="movie-card">
+        <div class="movie-placeholder">🎬</div>
+        <div class="movie-content">
+            <h3>{{ movie["title"] }}</h3>
+            <p class="genre">{{ movie["genre"] }}</p>
+            <p>{{ movie["release_year"] or "Year not added" }}{% if movie["director"] %} · {{ movie["director"] }}{% endif %}</p>
+            <p class="description">{{ movie["description"] }}</p>
+            {% if user_status.get(movie["id"]) %}
+                <span class="status">{{ user_status[movie["id"]] }}</span>
+            {% else %}
+                <span class="status neutral">Not added</span>
+            {% endif %}
+            <a class="button-link" href="{{ url_for('movie_detail', movie_id=movie['id']) }}">View Details</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><h3>No movies found</h3><p>Try another search or genre.</p></div>
+{% endif %}
+{% endblock %}

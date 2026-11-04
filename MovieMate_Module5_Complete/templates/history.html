@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}My Viewing History{% endblock %}
+{% block content %}
+<h1>My Watchlist & Viewing History</h1>
+<p class="muted">Track movies you want to watch and movies you have already watched.</p>
+
+{% if history %}
+<div class="table-wrap">
+<table>
+    <thead><tr><th>Movie</th><th>Genre</th><th>Status</th><th>Watched date</th><th>Update</th><th>Remove</th></tr></thead>
+    <tbody>
+    {% for item in history %}
+    <tr>
+        <td><a href="{{ url_for('movie_detail', movie_id=item['id']) }}">{{ item["title"] }}</a></td>
+        <td>{{ item["genre"] }}</td>
+        <td>{{ item["status"] }}</td>
+        <td>{{ item["watched_on"] or "—" }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('update_history_status', history_id=item['history_id']) }}" class="inline-form">
+                <select name="status">
+                    <option value="Want to Watch" {% if item["status"] == "Want to Watch" %}selected{% endif %}>Want to Watch</option>
+                    <option value="Watched" {% if item["status"] == "Watched" %}selected{% endif %}>Watched</option>
+                </select>
+                <input type="date" name="watched_on" value="{{ item['watched_on'] or '' }}" title="Watched date">
+                <button type="submit" class="small-button">Save</button>
+            </form>
+        </td>
+        <td>
+            <form method="POST" action="{{ url_for('delete_history', history_id=item['history_id']) }}" onsubmit="return confirm('Remove this movie from your history?');">
+                <button type="submit" class="small-button danger-button">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="empty-state"><h3>Your list is empty</h3><p>Browse the catalog and add movies to your watchlist.</p><a class="button-link" href="{{ url_for('movies') }}">Browse Movies</a></div>
+{% endif %}
+{% endblock %}

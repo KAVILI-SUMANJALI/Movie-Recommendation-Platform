@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Reviews & Sentiment Analysis{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Reviews & Sentiment Analysis</h1>
+        <p class="muted">Write a movie review and let the system classify its sentiment using VADER.</p>
+    </div>
+</div>
+
+<div class="sentiment-stats">
+    <div class="stat-card"><span>{{ total_reviews }}</span><p>Total Reviews</p></div>
+    <div class="stat-card positive"><span>{{ sentiment_summary.get('Positive', 0) }}</span><p>Positive</p></div>
+    <div class="stat-card negative"><span>{{ sentiment_summary.get('Negative', 0) }}</span><p>Negative</p></div>
+    <div class="stat-card"><span>{{ sentiment_summary.get('Neutral', 0) }}</span><p>Neutral</p></div>
+</div>
+
+<section class="form-card wide">
+    <h2>Submit a Movie Review</h2>
+    <form method="POST" action="{{ url_for('add_review') }}">
+        <label for="movie_id">Select Movie</label>
+        <select id="movie_id" name="movie_id" required>
+            <option value="">Choose a movie</option>
+            {% for movie in movies %}
+                <option value="{{ movie['id'] }}">{{ movie['title'] }}</option>
+            {% endfor %}
+        </select>
+        <label for="review_text">Your Review</label>
+        <textarea id="review_text" name="review_text" rows="5" maxlength="1000" minlength="3" placeholder="Example: This movie was amazing. The story and acting were excellent!" required></textarea>
+        <p class="muted">Write between 3 and 1000 characters. The system will detect Positive, Negative, or Neutral sentiment.</p>
+        <button type="submit">Analyze & Submit Review</button>
+    </form>
+</section>
+
+<section class="recommendation-section">
+    <h2>Recent Movie Reviews</h2>
+    {% if reviews %}
+        <div class="review-list">
+            {% for review in reviews %}
+                <article class="review-card">
+                    <div class="review-heading">
+                        <div><h3>{{ review['movie_title'] }}</h3><p class="muted">By {{ review['username'] }} · {{ review['created_at'] }}</p></div>
+                        <span class="sentiment-badge {{ review['sentiment']|lower }}">{{ review['sentiment'] }}</span>
+                    </div>
+                    <p class="review-text">{{ review['review_text'] }}</p>
+                    <p class="muted">Sentiment score: {{ "%.3f"|format(review['compound_score']) }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state"><h3>No reviews yet</h3><p>Be the first to submit a movie review.</p></div>
+    {% endif %}
+</section>
+{% endblock %}

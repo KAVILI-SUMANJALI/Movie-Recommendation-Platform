@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Add Movie{% endblock %}
+{% block content %}
+<div class="form-card wide">
+    <h1>Add a Movie</h1>
+    <p class="muted">Add a movie to the shared catalog.</p>
+    <form method="POST">
+        <label>Movie title *</label><input type="text" name="title" required>
+        <label>Genre *</label><input type="text" name="genre" placeholder="Action, Drama" required>
+        <label>Release year</label><input type="number" name="release_year" min="1888" max="2100" placeholder="2024">
+        <label>Director</label><input type="text" name="director">
+        <label>Description</label><textarea name="description" rows="4" placeholder="Short movie summary"></textarea>
+        <label>Poster image URL (optional)</label><input type="url" name="poster_url" placeholder="https://example.com/poster.jpg">
+        <button type="submit">Add Movie</button>
+    </form>
+    <p class="bottom-text"><a href="{{ url_for('movies') }}">Back to Catalog</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="form-card wide">
+    <h1>My Profile</h1>
+    <p class="muted">Update your personal details and movie preferences.</p>
+    <form method="POST">
+        <label>Full name</label><input type="text" name="full_name" value="{{ user['full_name'] }}" required>
+        <label>Username</label><input type="text" value="{{ user['username'] }}" disabled>
+        <label>Email address</label><input type="email" value="{{ user['email'] }}" disabled>
+        <label>Favorite movie genres</label><input type="text" name="favorite_genres" value="{{ user['favorite_genres'] or '' }}" placeholder="Action, Comedy, Thriller">
+        <label>About me</label><textarea name="bio" rows="4">{{ user['bio'] or '' }}</textarea>
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

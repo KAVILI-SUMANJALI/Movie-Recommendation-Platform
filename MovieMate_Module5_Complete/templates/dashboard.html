@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="welcome">
+    <h1>Welcome, {{ user["full_name"] }}!</h1>
+    <p>Your MovieMate account is ready. Explore movies and maintain your viewing history.</p>
+</section>
+<div class="stats">
+    <div class="stat-card"><span>{{ movie_count }}</span><p>Movies in Catalog</p></div>
+    <div class="stat-card"><span>{{ watchlist_count }}</span><p>Want to Watch</p></div>
+    <div class="stat-card"><span>{{ watched_count }}</span><p>Watched Movies</p></div>
+</div>
+<div class="grid">
+    <div class="info-card">
+        <h3>Account Details</h3>
+        <p><strong>Name:</strong> {{ user["full_name"] }}</p>
+        <p><strong>Username:</strong> {{ user["username"] }}</p>
+        <p><strong>Email:</strong> {{ user["email"] }}</p>
+        <a class="button-link" href="{{ url_for('profile') }}">Edit Profile</a>
+    </div>
+    <div class="info-card">
+        <h3>Movie Preferences</h3>
+        <p><strong>Favorite genres:</strong> {{ user["favorite_genres"] or "Not added yet" }}</p>
+        <p><strong>About me:</strong> {{ user["bio"] or "No profile description yet" }}</p>
+        <a class="button-link" href="{{ url_for('movies') }}">Browse Movies</a>
+        <a class="button-link" href="{{ url_for('recommendations') }}">Get Recommendations</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Analytics Dashboard - MovieMate{% endblock %}
+{% block content %}
+<section class="page-heading">
+    <div>
+        <h1>Analytics Dashboard</h1>
+        <p class="muted">A live overview of movies, users, ratings, viewing activity and review sentiment.</p>
+    </div>
+</section>
+
+<section class="stats-grid analytics-stats">
+    <article class="stat-card"><span class="stat-label">Registered Users</span><strong>{{ total_users }}</strong></article>
+    <article class="stat-card"><span class="stat-label">Movies in Catalog</span><strong>{{ total_movies }}</strong></article>
+    <article class="stat-card"><span class="stat-label">Movie Reviews</span><strong>{{ total_reviews }}</strong></article>
+    <article class="stat-card"><span class="stat-label">Movie Ratings</span><strong>{{ total_ratings }}</strong></article>
+    <article class="stat-card"><span class="stat-label">Watched Entries</span><strong>{{ total_watched }}</strong></article>
+    <article class="stat-card"><span class="stat-label">Watchlist Entries</span><strong>{{ total_watchlist }}</strong></article>
+</section>
+
+<section class="analytics-panel">
+    <h2>Review Sentiment Analysis</h2>
+    <p class="muted">Distribution of all submitted movie reviews.</p>
+    {% set sentiment_total = sentiment_counts.Positive + sentiment_counts.Negative + sentiment_counts.Neutral %}
+    {% for label in ['Positive', 'Negative', 'Neutral'] %}
+        {% set count = sentiment_counts[label] %}
+        {% if sentiment_total > 0 %}
+            {% set percent = (count * 100 / sentiment_total)|round(1) %}
+        {% else %}
+            {% set percent = 0 %}
+        {% endif %}
+        <div class="bar-row">
+            <div class="bar-heading"><span>{{ label }}</span><strong>{{ count }} ({{ percent }}%)</strong></div>
+            <div class="bar-track"><div class="bar-fill sentiment-{{ label|lower }}" style="width: {{ percent }}%"></div></div>
+        </div>
+    {% endfor %}
+    {% if sentiment_total == 0 %}<p class="empty-state">No reviews yet. Submit a review to see sentiment analytics.</p>{% endif %}
+</section>
+
+<div class="analytics-columns">
+    <section class="analytics-panel">
+        <h2>Most Reviewed Movies</h2>
+        {% for movie in most_reviewed %}
+            <div class="bar-row">
+                <div class="bar-heading"><span>{{ movie.title }}</span><strong>{{ movie.review_count }}</strong></div>
+                <div class="bar-track"><div class="bar-fill bar-blue" style="width: {{ (movie.review_count * 100 / max_review_count) if max_review_count else 0 }}%"></div></div>
+            </div>
+        {% else %}
+            <p class="empty-state">No movie data available.</p>
+        {% endfor %}
+    </section>
+
+    <section class="analytics-panel">
+        <h2>Most Watched Movies</h2>
+        {% for movie in most_watched %}
+            <div class="bar-row">
+                <div class="bar-heading"><span>{{ movie.title }}</span><strong>{{ movie.watched_count }}</strong></div>
+                <div class="bar-track"><div class="bar-fill bar-purple" style="width: {{ (movie.watched_count * 100 / max_watched_count) if max_watched_count else 0 }}%"></div></div>
+            </div>
+        {% else %}
+            <p class="empty-state">No movie data available.</p>
+        {% endfor %}
+    </section>
+</div>
+
+<section class="analytics-panel">
+    <h2>Top Rated Movies</h2>
+    {% if top_rated %}
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead><tr><th>Movie</th><th>Average Rating</th><th>Number of Ratings</th></tr></thead>
+            <tbody>
+            {% for movie in top_rated %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>★ {{ movie.average_rating }}/5</td>
+                    <td>{{ movie.rating_count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="empty-state">No ratings have been submitted yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

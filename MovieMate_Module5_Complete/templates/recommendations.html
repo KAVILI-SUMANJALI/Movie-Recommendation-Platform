@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Movie Recommendations{% endblock %}
+{% block content %}
+<section class="welcome">
+    <h1>Recommended for You 🎬</h1>
+    <p>Movie suggestions are calculated from your favorite genres, viewing history and ratings.</p>
+</section>
+
+<section class="recommendation-section">
+    <h2>Personalized Recommendations</h2>
+    <p class="muted">The system combines content similarity and collaborative filtering when enough rating data is available.</p>
+    {% if recommendations %}
+    <div class="movie-grid">
+        {% for movie in recommendations %}
+        <article class="movie-card">
+            <div class="movie-placeholder">🎬</div>
+            <div class="movie-content">
+                <h3>{{ movie["title"] }}</h3>
+                <p class="genre">{{ movie["genre"] }}</p>
+                <p>{{ movie["release_year"] or "Year not added" }}{% if movie["director"] %} · {{ movie["director"] }}{% endif %}</p>
+                <p class="description">{{ movie["description"] }}</p>
+                <p><strong>Match score:</strong> {{ movie["recommendation_score"] }}/5</p>
+                <p><strong>Method:</strong> {{ movie["method"] }}</p>
+                {% if movie["average_rating"] is not none %}
+                    <p><strong>Community rating:</strong> {{ movie["average_rating"] }}/5 ({{ movie["rating_count"] }} ratings)</p>
+                {% else %}
+                    <p class="muted">No community ratings yet</p>
+                {% endif %}
+                <a class="button-link" href="{{ url_for('movie_detail', movie_id=movie['id']) }}">View & Rate</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No new recommendations right now</h3>
+        <p>Explore the catalog, rate a few movies, or update your favorite genres in My Profile.</p>
+        <a class="button-link" href="{{ url_for('movies') }}">Browse Movies</a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="recommendation-section">
+    <h2>Top-Rated Movies</h2>
+    {% if top_rated %}
+    <div class="movie-grid">
+        {% for movie in top_rated %}
+        <article class="movie-card">
+            <div class="movie-placeholder">⭐</div>
+            <div class="movie-content">
+                <h3>{{ movie["title"] }}</h3>
+                <p class="genre">{{ movie["genre"] }}</p>
+                <p><strong>Average rating:</strong> {{ movie["average_rating"] }}/5</p>
+                <p>{{ movie["rating_count"] }} user rating(s)</p>
+                <a class="button-link" href="{{ url_for('movie_detail', movie_id=movie['id']) }}">View Details</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h3>No ratings have been submitted yet</h3>
+        <p>Rate movies to build the community top-rated list and improve collaborative recommendations.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
